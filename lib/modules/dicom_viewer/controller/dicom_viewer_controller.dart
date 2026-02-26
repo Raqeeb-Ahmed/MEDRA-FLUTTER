@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:medra/utills/snackbar/app_snackbar.dart';
 import '../../../data/services/api_service.dart';
 import '../model/dicom_image_model.dart';
+import '../screen/widgets/annotation_details_sheet.dart';
+import '../screen/widgets/more_details_sheet.dart';
 
 
 class DicomViewerController extends GetxController {
@@ -38,6 +40,34 @@ class DicomViewerController extends GetxController {
     }
   }
 
+
+
+  var aiEnabled = false.obs;
+  var annotationEnabled = true.obs;
+
+  void toggleAI(bool value) {
+    aiEnabled.value = value;
+  }
+
+  void toggleAnnotation(bool value) {
+    annotationEnabled.value = value;
+  }
+
+  void openMoreDetails() {
+    Get.bottomSheet(
+      const MoreDetailsSheet(),
+      isScrollControlled: true,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+    );
+  }
+
+  void openAnnotationDetails() {
+    Get.bottomSheet(
+      const AnnotationDetailsSheet(),
+      isScrollControlled: true,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+    );
+  }
 
 
 

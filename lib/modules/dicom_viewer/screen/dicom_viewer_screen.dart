@@ -33,6 +33,9 @@ class DicomViewerScreen extends StatelessWidget {
 
                   // SLOT 1
                   GestureDetector(
+                    onLongPress: () {
+                      controller.openAnnotationDetails();
+                    },
                     onTap: () => controller.selectSlot(1),
                     child: Obx(() => DicomImageCard(
                       dicom: controller.images[controller.firstSlotIndex.value],
@@ -45,6 +48,9 @@ class DicomViewerScreen extends StatelessWidget {
 
                   // SLOT 2
                   GestureDetector(
+                    onLongPress: () {
+                      controller.openAnnotationDetails();
+                    },
                     onTap: () => controller.selectSlot(2),
                     child: Obx(() => DicomImageCard(
                       dicom: controller.images[controller.secondSlotIndex.value],
@@ -136,7 +142,7 @@ class DicomViewerScreen extends StatelessWidget {
                 const SizedBox(width: 5),
                 GestureDetector(
                   onTap: () {
-
+                    controller.openMoreDetails();
                   },
                   child: Container(
                     width: 45,
