@@ -8,6 +8,7 @@ class StudyModel {
   final bool aiAnalysed;
   final String patient_name;
   final String accessType;
+  final String? permission_level;
 
   StudyModel({
     required this.id,
@@ -19,6 +20,7 @@ class StudyModel {
     required this.aiAnalysed,
     required this.patient_name,
     required this.accessType,
+    required this.permission_level,
   });
 
   factory StudyModel.fromMap(Map<String, dynamic> map) {
@@ -36,6 +38,7 @@ class StudyModel {
       aiAnalysed: map['is_ai_processed'] ?? false,
       patient_name: map['patient_name']?.toString() ?? 'Unknown',
       accessType: map['access_type']?.toString() ?? 'OWNED',
+      permission_level: map['permission_level']?.toString(),
     );
   }
 }

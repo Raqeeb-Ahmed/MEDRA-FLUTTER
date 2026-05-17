@@ -11,8 +11,10 @@ class ConsultationController extends GetxController {
   final ApiService _api = ApiService();
  final localstorage = GetStorage();
   var consultations = <ConsultationModel>[].obs;
+  var filteredConsultations = <ConsultationModel>[].obs;
   var doctors = [].obs;
   var studies = [].obs;
+  var usersList = [].obs;
 
 
   // Selected values for dropdowns
@@ -40,6 +42,8 @@ class ConsultationController extends GetxController {
   @override
   void onClose() {
       consultations.clear();
+      filteredConsultations.clear();
+      usersList.clear();
       doctors.clear();
       studies.clear();
       super.onClose();
@@ -54,13 +58,15 @@ class ConsultationController extends GetxController {
 
       final results = await Future.wait([
         _api.fetchDoctors(),
+        _api.fetchAllUsers(),
         _api.fetchMyStudies(user_id),
       ]);
 
       doctors.assignAll(results[0]);
-      print(doctors);
-      studies.assignAll(results[1]);
-      print(doctors);
+      usersList.assignAll(results[1]);
+      // print(usersList);
+      studies.assignAll(results[2]);
+      // print(usersList);
     } finally {
       isLoading.value = false;
     }
@@ -97,14 +103,31 @@ class ConsultationController extends GetxController {
 
       if (role == 'doctor') {
         var data = await _api.fetchDoctorConsultations(token: token, doctorId: userId);
-
-        consultations.value = data.map((item) { return ConsultationModel.fromMap(item);}).toList();
+        // Doctor side data hamesha Map ki list hoti hai
+        consultations.value = data.map((item) => ConsultationModel.fromMap(item)).toList();
       } else {
         var data = await _api.fetchConsultations(userId);
-        consultations.assignAll(data);
+
+        if (data.isNotEmpty) {
+          print("Patient Side Raw Data: ${data[0]}"); // saari keys nazar aa aainge
+        }
+        //Patient side data ko handle karne ka sahi tareeqa
+        consultations.value = data.map((item) {
+          if (item is ConsultationModel) {
+            return item;
+          } else {
+            // Agar API se raw Map aa raha hai toh usay model mein convert karein
+            return ConsultationModel.fromMap(item as Map<String, dynamic>);
+          }
+        }).toList();
       }
+
+      //sync  Filtered list taake search aur list foran update hon
+      filteredConsultations.assignAll(consultations);
+
     } catch (e) {
-      AppSnackbar.error(e.toString());
+      print("Refresh Error: $e"); // Debugging ke liye
+      AppSnackbar.error("Failed to load consultations");
     } finally {
       isLoading.value = false;
     }
@@ -183,5 +206,21 @@ class ConsultationController extends GetxController {
   }
 
 
+
+
+// Search function
+void filterConsultations(String query) {
+  if (query.isEmpty) {
+    filteredConsultations.assignAll(consultations);
+  } else {
+    filteredConsultations.assignAll(
+        consultations.where((c) =>
+        c.patientName.toLowerCase().contains(query.toLowerCase()) ||
+            c.scanType.toLowerCase().contains(query.toLowerCase()) ||
+            c.status.toLowerCase().contains(query.toLowerCase())
+        ).toList()
+    );
+  }
+}
 }
 

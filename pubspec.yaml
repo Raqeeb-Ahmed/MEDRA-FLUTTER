@@ -44,6 +44,7 @@ dependencies:
   #local Get-storage
   get_storage: ^2.1.1
   file_picker: ^10.3.10
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
   assets:
     - assets/
     - assets/logo/logo.png
+    - assets/logo/brain.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

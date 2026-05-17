@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../dicom_viewer/controller/dicom_viewer_controller.dart';
-import '../controller/dicom_viewer_controller.dart';
+import '../controller/dicom_edit_controller.dart';
 
 class ColorPickerSheet extends StatelessWidget {
   const ColorPickerSheet({super.key});

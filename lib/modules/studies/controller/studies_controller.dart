@@ -69,6 +69,24 @@ class StudiesController extends GetxController {
   //   }
   // }
 
+  var filteredStudies = <StudyModel>[].obs;
+
+
+  void filterStudies(String query) {
+    if (query.isEmpty) {
+      filteredStudies.assignAll(studies);
+    } else {
+      filteredStudies.assignAll(
+          studies.where((s) =>
+          s.patient_name.toLowerCase().contains(query.toLowerCase()) ||
+              s.title.toLowerCase().contains(query.toLowerCase()) ||
+              s.id.toLowerCase().contains(query.toLowerCase())
+          ).toList()
+      );
+    }
+  }
+
+
 
   Future<void> pickAndUploadStudy() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -121,6 +139,8 @@ class StudiesController extends GetxController {
         var results = await _studyService.fetchMyStudies(userId);
         print(results);
         studies.assignAll(results);
+        filteredStudies.assignAll(results);
+
       }
     } catch (e) {
       print(studies);

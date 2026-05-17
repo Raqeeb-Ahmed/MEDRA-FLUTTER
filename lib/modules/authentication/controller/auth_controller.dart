@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:medra/modules/authentication/screen/login_screen.dart';
 import 'package:medra/modules/consultation/controller/consultation_controller.dart';
-import 'package:medra/modules/dicom_edit/controller/dicom_viewer_controller.dart';
+import 'package:medra/modules/dicom_edit/controller/dicom_edit_controller.dart';
 import 'package:medra/modules/studies/controller/studies_controller.dart';
 import 'package:medra/modules/studies/screen/studies_screen.dart';
 import 'package:medra/navigation_menu.dart';

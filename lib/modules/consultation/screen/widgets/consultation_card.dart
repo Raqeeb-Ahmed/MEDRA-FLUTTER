@@ -60,7 +60,7 @@ class ConsultationCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  consultation.doctorName,
+                  consultation.patientName,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,

@@ -29,7 +29,7 @@ class DoctorReferBottomSheet extends StatelessWidget {
             hint: "Select Assigned Patient",
             // Doctor API se aaye huye patients ki list
             items: controller.consultations.map((c) =>
-                DropdownMenuItem(value: c.id, child: Text("${c.doctorName} (${c.scanType})"))
+                DropdownMenuItem(value: c.id, child: Text("${c.patientName} (${c.scanType})"))
             ).toList(),
             onChanged: (val) => controller.selectedConsultationId.value = val!,
           ),

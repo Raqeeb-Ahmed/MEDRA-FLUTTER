@@ -6,6 +6,7 @@ import 'package:medra/modules/authentication/controller/auth_controller.dart';
 import 'package:medra/modules/consultation/screen/widgets/consultation_bottom_sheet.dart';
 import 'package:medra/modules/consultation/screen/widgets/doctor_refer_bottom_sheet.dart';
 import '../../../utills/constant/colors.dart';
+import '../../dicom_viewer/screen/dicom_viewer_screen.dart';
 import '../controller/consultation_controller.dart';
 import 'widgets/consultation_card.dart';
 
@@ -63,11 +64,12 @@ class ConsultationsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+
             TextField(
+              onChanged: (value) => controller.filterConsultations(value),
               decoration: InputDecoration(
                 hintText: 'Search',
                 prefixIcon: const Icon(Icons.search),
-                // suffixIcon: const Icon(Icons.mic),
                 filled: true,
                 fillColor: Colors.grey.shade100,
                 border: OutlineInputBorder(
@@ -82,13 +84,43 @@ class ConsultationsScreen extends StatelessWidget {
                 if (controller.isLoading.value) {
                   return const Center(child: CircularProgressIndicator());
                 }
+
+                if (controller.filteredConsultations.isEmpty) {
+                  return const Center(child: Text("No Consultations Found"));
+                }
+
                 return RefreshIndicator(
                   onRefresh: () async => controller.refreshConsultations(),
                   child: ListView.builder(
-                    itemCount: controller.consultations.length,
+                    itemCount: controller.filteredConsultations.length,
                     itemBuilder: (context, index) {
-                      return ConsultationCard(
-                        consultation: controller.consultations[index],
+                      final consultationData = controller.filteredConsultations[index];
+
+                      return GestureDetector(
+                        onTap: () {
+
+                          String sId = consultationData.study_id;
+
+                          // Agar ID phir bhi null aa rahi hai to debug print karein
+                          if (sId.isEmpty) {
+                            print("WARNING: Study ID is empty for this consultation!");
+                            // Ho sakta hai ke consultationData.id hi study ID ho?
+                            // sId = consultationData.id; // Sirf testing ke liye
+                          }
+
+                          print(consultationData.study_id);
+                          print(consultationData.scanType);
+                          print(consultationData.patientName);
+                          Get.to(() => DicomViewerScreen(), arguments: {
+
+                            "studyId": sId,
+                            "title": consultationData.scanType,
+                            "patient": consultationData.patientName ?? "Patient",
+                          });
+                        },
+                        child: ConsultationCard(
+                          consultation: consultationData,
+                        ),
                       );
                     },
                   ),

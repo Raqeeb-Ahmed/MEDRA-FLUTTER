@@ -27,7 +27,7 @@ class StudyCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.asset(
-              'assets/logo/logo.png',
+              'assets/logo/brain.jpg',
               width: 70,
               height: 70,
               fit: BoxFit.cover,

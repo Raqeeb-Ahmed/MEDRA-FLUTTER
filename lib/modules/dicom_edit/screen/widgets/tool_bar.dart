@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controller/dicom_viewer_controller.dart';
+import '../../controller/dicom_edit_controller.dart';
 
 class ToolBar extends StatelessWidget {
   final Function(ToolType) onToolSelected;
@@ -14,30 +14,27 @@ class ToolBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Controller ko find karein taake hum selectedTool ko listen kar sakein
     final controller = Get.find<DicomEditController>();
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: Colors.grey)),
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _tool("Circle", Icons.circle_outlined,
-                  () => onToolSelected(ToolType.circle),
-              controller.selectedTool.value == ToolType.circle),
-          _tool("Square", Icons.crop_square,
-                  () => onToolSelected(ToolType.square),
-              controller.selectedTool.value == ToolType.square),
-          _tool("Mark", Icons.arrow_right_alt,
-                  () => onToolSelected(ToolType.arrow),
-              controller.selectedTool.value == ToolType.arrow),
-          _tool("Text", Icons.text_fields,
-                  () => onToolSelected(ToolType.text),
-              controller.selectedTool.value == ToolType.text),
+          // Har tool ke liye build function call karein
+          _tool("Circle", Icons.circle_outlined, ToolType.circle, controller),
+          _tool("Square", Icons.crop_square, ToolType.square, controller),
+          // _tool("Mark", Icons.arrow_right_alt, ToolType.arrow, controller),
+          _tool("Text", Icons.text_fields, ToolType.text, controller),
+
+          // Color Lens Icon
           IconButton(
-            icon: const Icon(Icons.color_lens),
+            icon: const Icon(Icons.color_lens, color: Colors.black),
             onPressed: onColorTap,
           ),
         ],
@@ -45,26 +42,34 @@ class ToolBar extends StatelessWidget {
     );
   }
 
-  Widget _tool(
-      String label,
-      IconData icon,
-      VoidCallback onTap,
-      bool selected,
-      ) {
+  // Updated _tool helper function
+  Widget _tool(String label, IconData icon, ToolType type, DicomEditController controller) {
     return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Icon(icon, color: selected ? Colors.blue : Colors.black),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: selected ? Colors.blue : Colors.black,
+      onTap: () => onToolSelected(type),
+      child: Obx(() {
+        // Yeh Obx sirf is icon ka rang tab badlega jab selectedTool change hoga
+        bool isSelected = controller.selectedTool.value == type;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.blue : Colors.black,
+              size: 28,
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? Colors.blue : Colors.black,
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

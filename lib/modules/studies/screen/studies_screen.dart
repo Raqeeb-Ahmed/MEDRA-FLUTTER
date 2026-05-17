@@ -19,6 +19,8 @@ class StudiesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // final displayList = controller.filteredStudies;
     String role = GetStorage().read('role');
     return Scaffold(
       backgroundColor: Colors.white,
@@ -54,10 +56,10 @@ class StudiesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             TextField(
+              onChanged: (value) => controller.filterStudies(value), // StudiesController ka search
               decoration: InputDecoration(
-                hintText: 'Search',
+                hintText: 'Search by Patient, Title or ID...',
                 prefixIcon: const Icon(Icons.search),
-                // suffixIcon: const Icon(Icons.mic),
                 filled: true,
                 fillColor: Colors.grey.shade100,
                 border: OutlineInputBorder(
@@ -67,12 +69,22 @@ class StudiesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+
             Expanded(
+
               child: Obx(
+
                     () {
-                  if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                      if (controller.isLoading.value) return const Center(child: CircularProgressIndicator());
+                      // if (displayList.isEmpty) return const Center(child: Text("No Results Found"));
+
+                      if (controller.studies.isEmpty) {
+                        return Center(child: Text("No Studies Available"));
+                      }
+
+                      if (controller.filteredStudies.isEmpty) {
+                        return const Center(child: Text("No Results Found"));
+                      }
 
                   if (controller.studies.isEmpty) {
                     return RefreshIndicator(
@@ -93,15 +105,16 @@ class StudiesScreen extends StatelessWidget {
                     backgroundColor: Colors.white,
                     child: ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: controller.studies.length,
+                      itemCount: controller.filteredStudies.length,
                       itemBuilder: (context, index) {
-                        final studyData = controller.studies[index];
+                        final studyData = controller.filteredStudies[index];
                         return GestureDetector(
                           onTap: () {
                             Get.to(() => DicomViewerScreen(), arguments: {
                               "studyId": studyData.id,
                               "title": studyData.title,
                               "patient": studyData.patient_name,
+                              "permission_level": studyData.permission_level ?? "full_access",
                             });
                           },
                           onLongPress: () {
@@ -123,6 +136,7 @@ class StudiesScreen extends StatelessWidget {
                     },
               ),
             ),
+
           ],
         ),
       ),
@@ -144,7 +158,7 @@ void _showShareBottomSheet(BuildContext context, String studyId) {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Obx(() {
-        bool hasDoctors = controller.doctors.isNotEmpty;
+        bool hasDoctors = controller.usersList.isNotEmpty;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,18 +177,19 @@ void _showShareBottomSheet(BuildContext context, String studyId) {
             ),
             const SizedBox(height: 20),
 
+
             const Text(
-              "Select Doctor",
+              "Select User To Share",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             _dropdown(
               hint: hasDoctors ? "Choose recipient" : "Loading users...",
               value: controller.selectedReferDoctorId.value.isEmpty ? null : controller.selectedReferDoctorId.value,
-              items: controller.doctors.map((doc) {
+              items: controller.usersList.map((user) {
                 return DropdownMenuItem<String>(
-                  value: doc['id'].toString(),
-                  child: Text(doc['username'] ?? "No Name"),
+                  value: user['id'].toString(),
+                  child: Text("${user['username']} (${user['role']})"),
                 );
               }).toList(),
               onChanged: (val) => controller.selectedReferDoctorId.value = val ?? "",
